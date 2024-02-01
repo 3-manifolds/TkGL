@@ -21,7 +21,7 @@ jobs:
           yum install -y wget
 
       - name: Run build script
-        run:
+        run: |
           cd TkGL
           bash ./ci/linux/build_linux_tkgl.sh
 
