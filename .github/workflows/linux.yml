@@ -20,11 +20,11 @@ jobs:
 
       - name: Run build script
         run: |
-          cd TkGL
+          cd /__w/TkGL/TkGL 
           bash ./ci/linux/build_linux_tkgl.sh
 
       - name: Save artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v2
         with:
           name: TkGL_pkg_linux
           path: ./dist
