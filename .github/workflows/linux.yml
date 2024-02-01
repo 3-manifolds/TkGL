@@ -18,7 +18,7 @@ jobs:
 
       - name: install wget
         run:
-          yum install wget
+          yum install -Y wget
 
       - name: Run build script
         run:
