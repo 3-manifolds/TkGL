@@ -557,15 +557,15 @@ TkglConfigure(
  *
  * TkglObjEventProc --
  *
- *	This procedure is invoked by the Tk dispatcher for various events on
- *	tkgls.
+ *	This procedure is invoked by the Tk dispatcher to process events
+ *	sent to a TkGL widget.
  *
  * Results:
  *	None.
  *
  * Side effects:
  *	When the window gets deleted, internal structures get cleaned up. When
- *	it gets exposed, it is redisplayed.
+ *	it gets exposed or the size changes, it is redisplayed.
  *
  *--------------------------------------------------------------
  */
@@ -576,6 +576,7 @@ TkglObjEventProc(
     XEvent *eventPtr)		/* Information about event. */
 {
     Tkgl *tkglPtr = (Tkgl *)clientData;
+    int new_width, new_height;
 
     switch(eventPtr->type) {
     case Expose:
@@ -585,13 +586,20 @@ TkglObjEventProc(
 	}
 	break;
     case ConfigureNotify:
-	tkglPtr->width = Tk_Width(tkglPtr->tkwin);
-	tkglPtr->height = Tk_Height(tkglPtr->tkwin);
-	XResizeWindow(Tk_Display(tkglPtr->tkwin), Tk_WindowId(tkglPtr->tkwin),
-		      tkglPtr->width, tkglPtr->height);
-	if (!tkglPtr->updatePending) {
-	    Tcl_DoWhenIdle(TkglDisplay, tkglPtr);
-	    tkglPtr->updatePending = 1;
+	new_width = Tk_Width(tkglPtr->tkwin);
+	new_height = Tk_Height(tkglPtr->tkwin);
+#if 0
+	fprintf(stderr, "ConfigureNotify: %d x %d -> %d x %d\n",
+		tkglPtr->width, tkglPtr->height, new_width, new_height);
+#endif
+	if (new_width != tkglPtr->width || new_height != tkglPtr->height) {
+	    tkglPtr->width = new_width;
+	    tkglPtr->height = new_height;
+	    Tk_ResizeWindow(tkglPtr->tkwin, new_width, new_height);
+	    if (!tkglPtr->updatePending) {
+		Tcl_DoWhenIdle(TkglDisplay, tkglPtr);
+		tkglPtr->updatePending = 1;
+	    }
 	}
 	break;
     case DestroyNotify:
@@ -662,7 +670,7 @@ TkglDeletedProc(
     }
     if (tkglPtr->updatePending) {
         Tcl_CancelIdleCall(TkglDisplay, (void *) tkglPtr);
-        tkglPtr->updatePending = False;
+        tkglPtr->updatePending = 0;
     }
 #ifndef NO_TK_CURSOR
     if (tkglPtr->cursor != NULL) {

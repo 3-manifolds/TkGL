@@ -19,7 +19,8 @@
 #include <AppKit/NSView.h>
 #include <tkMacOSXInt.h>              /* for MacDrawable */
 #include <ApplicationServices/ApplicationServices.h>
-#define Tkgl_MacOSXGetDrawablePort(tkgl) TkMacOSXGetDrawablePort((Drawable) ((TkWindow *) tkgl->TkWin)->privatePtr)
+#define Tkgl_MacOSXGetDrawablePort(tkgl) \
+    TkMacOSXGetDrawablePort((Drawable) ((TkWindow *) tkgl->TkWin)->privatePtr)
 
 static NSOpenGLPixelFormat *
 tkgl_pixelFormat(Tkgl *tkgl)
@@ -77,7 +78,8 @@ tkgl_pixelFormat(Tkgl *tkgl)
     }
     if (tkgl->accumFlag) {
         attribs[na++] = NSOpenGLPFAAccumSize;
-        attribs[na++] = tkgl->accumRed + tkgl->accumGreen + tkgl->accumBlue + (tkgl->alphaFlag ? tkgl->accumAlpha : 0);
+        attribs[na++] = (tkgl->accumRed + tkgl->accumGreen + tkgl->accumBlue
+			 + (tkgl->alphaFlag ? tkgl->accumAlpha : 0));
     }
     if (tkgl->multisampleFlag) {
         attribs[na++] = NSOpenGLPFAMultisample;
@@ -215,7 +217,7 @@ tkgl_createPbuffer(Tkgl *tkgl)
 		pixelsWide:tkgl->width pixelsHigh:tkgl->height];
         if (pbuf != nil) {
             /* setPixelBuffer allocates the framebuffer space */
-	  [tkgl->context setPixelBuffer:pbuf cubeMapFace:0 mipMapLevel:0 
+	  [tkgl->context setPixelBuffer:pbuf cubeMapFace:0 mipMapLevel:0
 	   currentVirtualScreen:virtualScreen];
 	  return pbuf;
 	}
@@ -249,7 +251,7 @@ const char* Tkgl_GetExtensions(
     int bufsize = 0;
     int strsize = 0;
     int num;
-    
+
     if (tkglPtr->profile == PROFILE_LEGACY) {
 	return (const char *)glGetString(GL_EXTENSIONS);
     }
@@ -293,79 +295,31 @@ const char* Tkgl_GetExtensions(
 
 void Tkgl_Update(const Tkgl *tkglPtr)
 {
-  // The coordinates of the frame of an NSView are in points, but the
-  // coordinates of the bounds of an NSView managed by an
-  // NSOpenGLContext are in pixels.  (There are 2.0 pixels per point on
-  // a retina display.)  Coordinates can be converted with
-  // [NSView convertRectToBacking:(NSRect)rect];
+    // The coordinates of the frame of an NSView are in points, but the
+    // coordinates of the bounds of an NSView managed by an
+    // NSOpenGLContext are in pixels.  (There are 2.0 pixels per point on
+    // a retina display.)  Coordinates can be converted with
+    // [NSView convertRectToBacking:(NSRect)rect];
 
-    Rect widgetRect, toplevelRect;
     NSRect newFrame;
     TkWindow *widget = (TkWindow *) tkglPtr->tkwin;
-    TkWindow *toplevel = widget->privatePtr->toplevel->winPtr;
+    NSView *contentView = Tk_MacOSXGetNSViewForDrawable((Drawable)widget->privatePtr);
 
     if (tkglPtr->context && [tkglPtr->context view] != tkglPtr->nsview) {
 	[tkglPtr->context setView:tkglPtr->nsview];
     }
 
-    
-    TkMacOSXWinBounds(widget, &widgetRect);
-    TkMacOSXWinBounds(toplevel, &toplevelRect);
+    newFrame.size.width = Tk_Width(widget);
+    newFrame.size.height = Tk_Height(widget);
+    newFrame.origin.x = widget->privatePtr->xOff;
+    newFrame.origin.y = ([contentView bounds].size.height -
+			 newFrame.size.height -
+			 widget->privatePtr->yOff);
 
-    newFrame.origin.x = widgetRect.left - toplevelRect.left;
-    newFrame.origin.y = toplevelRect.bottom - widgetRect.bottom;
-    newFrame.size.width = widgetRect.right - widgetRect.left;
-    newFrame.size.height = widgetRect.bottom - widgetRect.top;
-
-    [tkglPtr->nsview setFrame:newFrame];
-    [tkglPtr->context update];  
-}
-
-/* Display reconfiguration callback. Documented as needed by Apple QA1209.
- * Updated for 10.3 (and later) to use 
- * CGDisplayRegisterReconfigurationCallback.
- */
-
-static void
-SetMacBufRect(Tkgl *tkgl)
-{
-    Rect r, rt;
-    NSRect    rect;
-    TkWindow *w = (TkWindow *) tkgl->tkwin;
-    TkWindow *t = w->privatePtr->toplevel->winPtr;
-
-    TkMacOSXWinBounds(w, &r);
-    TkMacOSXWinBounds(t, &rt);
-
-    rect.origin.x = r.left - rt.left;
-    rect.origin.y = rt.bottom - r.bottom;
-    rect.size.width = r.right - r.left;
-    rect.size.height = r.bottom - r.top;
-
-    [tkgl->nsview setFrame:rect];
-    [tkgl->context update];
-    
-    /* TODO: Support full screen. */
-}
-
-static void
-ReconfigureCB(CGDirectDisplayID display, CGDisplayChangeSummaryFlags flags,
-        void *closure)
-{
-    Tkgl   *tkgl = (Tkgl *) closure;
-
-    if (0 != (flags & kCGDisplayBeginConfigurationFlag))
-        return;                 /* wait until display is reconfigured */
-
-    SetMacBufRect(tkgl);
-    Tkgl_MakeCurrent(tkgl);
-    if (tkgl->context) {
-        if (tkgl->reshapeProc) {
-            Tkgl_CallCallback(tkgl, tkgl->reshapeProc);
-        } else {
-            glViewport(0, 0, tkgl->width, tkgl->height);
-        }
+    if (!NSEqualRects(newFrame, [tkglPtr->nsview frame])) {
+	[tkglPtr->nsview setFrame:newFrame];
     }
+    [tkglPtr->context update];
 }
 
 /*
@@ -432,8 +386,8 @@ Tkgl_CreateGLContext(Tkgl *tkglPtr)
     }
     return TCL_OK;
 }
- 
-/* 
+
+/*
  * Tkgl_MakeWindow
  *
  *   Window creation function, invoked as a callback from Tk_MakeWindowExist.
@@ -461,13 +415,13 @@ Tkgl_MakeWindow(Tk_Window tkwin, Window parent, void* instanceData)
         free(tkglPtr->blueMap);
     tkglPtr->redMap = tkglPtr->greenMap = tkglPtr->blueMap = NULL;
     tkglPtr->mapSize = 0;
- 
+
     display = Tk_Display(tkwin);
     scrnum = Tk_ScreenNumber(tkwin);
 
     /* ????
      * Windows and Mac OS X need the window created before OpenGL context
-     * is created.  So do that now and set the window variable. 
+     * is created.  So do that now and set the window variable.
      */
     window = Tk_MakeWindow(tkwin, parent);
 
@@ -488,7 +442,7 @@ Tkgl_MakeWindow(Tk_Window tkwin, Window parent, void* instanceData)
             goto error;
         }
     }
-    
+
     if (tkglPtr->visInfo == NULL) {
         Visual *visual= DefaultVisual(display, scrnum);
         tkglPtr->visInfo = (XVisualInfo *) calloc(1, sizeof (XVisualInfo));
@@ -503,7 +457,7 @@ Tkgl_MakeWindow(Tk_Window tkwin, Window parent, void* instanceData)
         tkglPtr->visInfo->depth = visual->bits_per_rgb;
     }
 
-    /* 
+    /*
      * We should already have a context, but ...
      */
     if (Tkgl_CreateGLContext(tkglPtr) != TCL_OK) {
@@ -513,7 +467,7 @@ Tkgl_MakeWindow(Tk_Window tkwin, Window parent, void* instanceData)
       tkglPtr->nsview = [[NSView alloc] initWithFrame:NSZeroRect];
       [tkglPtr->nsview setWantsBestResolutionOpenGLSurface:NO];
       MacDrawable *d = ((TkWindow *) tkglPtr->tkwin)->privatePtr;
-      NSView *topview = d->toplevel->view;	
+      NSView *topview = d->toplevel->view;
       [topview addSubview:tkglPtr->nsview];
 
       /* TODO: Appears setView has to be deferred until the window is mapped,
@@ -528,7 +482,6 @@ Tkgl_MakeWindow(Tk_Window tkwin, Window parent, void* instanceData)
             "could not create rendering context", TCL_STATIC);
         goto error;
     }
-    CGDisplayRegisterReconfigurationCallback(ReconfigureCB, tkglPtr);
     if (tkglPtr->pBufferFlag) {
         tkglPtr->pbuf = tkgl_createPbuffer(tkglPtr);
         if (!tkglPtr->pbuf) {
@@ -544,7 +497,7 @@ Tkgl_MakeWindow(Tk_Window tkwin, Window parent, void* instanceData)
         return window;
     }
 
-    /* 
+    /*
      * find a colormap
      */
     if (tkglPtr->rgbaFlag) {
@@ -569,8 +522,8 @@ Tkgl_MakeWindow(Tk_Window tkwin, Window parent, void* instanceData)
         }
     }
 
-    /* Make sure Tk knows to switch to the new colormap when the cursor is over
-     * this window when running in color index mode. */
+    /* Make sure Tk knows to switch to the new colormap when the cursor is
+     * over this window when running in color index mode. */
     (void) Tk_SetWindowVisual(tkwin, tkglPtr->visInfo->visual,
             tkglPtr->visInfo->depth, cmap);
 
@@ -629,7 +582,7 @@ Tkgl_MakeWindow(Tk_Window tkwin, Window parent, void* instanceData)
     return window;
 }
 
-/* 
+/*
  * Tkgl_MapWidget
  *
  *    Called when MapNotify events are received.
@@ -642,11 +595,11 @@ Tkgl_MapWidget(void *instanceData)
     if (!tkgl->pBufferFlag) {
 	[tkgl->context setView:tkgl->nsview];
 	[tkgl->nsview setHidden:NO];
-	SetMacBufRect(tkgl);
+	Tkgl_Update(tkgl);
     }
 }
 
-/* 
+/*
  * Tkgl_UnmapWidget
  *
  *    Called when UnmapNotify events are received.
@@ -660,7 +613,7 @@ Tkgl_UnmapWidget(void *instanceData)
     [tkgl->nsview setHidden:YES];
 }
 
-/* 
+/*
  * Tkgl_WorldChanged
  *
  *    Add support for setgrid option.
@@ -690,7 +643,7 @@ Tkgl_WorldChanged(ClientData instanceData)
     }
 }
 
-/* 
+/*
  * Tkgl_TakePhoto
  *
  *   Take a photo image of the current OpenGL window.  May have problems
@@ -755,7 +708,7 @@ Tkgl_TakePhoto(Tkgl *tkglPtr, Tk_PhotoHandle photo)
     return TCL_OK;
 }
 
-/* 
+/*
  * Tkgl_MakeCurrent
  *
  *   Bind the OpenGL rendering context to the specified
@@ -824,7 +777,6 @@ void Tkgl_FreeResources(
 	[tkglPtr->nsview removeFromSuperview];
 	[tkglPtr->nsview release];
 	tkglPtr->nsview = nil;
-	CGDisplayRemoveReconfigurationCallback(ReconfigureCB, tkglPtr);
 	free(tkglPtr->visInfo);
     }
     if (tkglPtr->pBufferFlag && tkglPtr->pbuf) {

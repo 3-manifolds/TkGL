@@ -17,6 +17,13 @@
 #endif
 #include "tk.h"
 
+#if TCL_MAJOR_VERION == 9
+/* Allow this package to load after Tcl 9.0 is released */
+#   define Tcl_InitStubs(interp, version, exact) \
+	(Tcl_InitStubs)(interp, ((exact) ? (version) : "9b0"), \
+	    (exact)|(TCL_MAJOR_VERSION<<8)|(TCL_MINOR_VERSION<<16), \
+	    TCL_STUB_MAGIC)
+#endif
 #if TCL_MAJOR_VERSION == 8
 #define TCL_INDEX_NONE (-1)
 typedef int Tcl_Size;

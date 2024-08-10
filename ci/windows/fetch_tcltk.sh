@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 set -e
-TCL8_VERSION=8.6.13
-TCL9_VERSION=9.0b1
+TCL8_VERSION=8.6.14
+TCL9_VERSION=9.0b3
 WGET="/c/msys64/usr/bin/wget -nv"
 CMD=/c/msys64/usr/bin/cmd
 if [ ! -e tcl$TCL8_VERSION-src.tar.gz ] ; then

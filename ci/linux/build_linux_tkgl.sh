@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
-TKGL_VERSION=1.1
-TCL8_VERSION=8.6.13
-TCL9_VERSION=9.0b1
+TKGL_VERSION=1.2
+TCL8_VERSION=8.6.14
+TCL9_VERSION=9.0b3
 TCL8_URL=https://prdownloads.sourceforge.net/tcl/tcl$TCL8_VERSION-src.tar.gz
 TK8_URL=https://prdownloads.sourceforge.net/tcl/tk$TCL8_VERSION-src.tar.gz
 TCL9_URL=https://prdownloads.sourceforge.net/tcl/tcl$TCL9_VERSION-src.tar.gz
