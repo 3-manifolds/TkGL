@@ -4,11 +4,11 @@ on: [push]
 
 jobs:
   build_package:
-    name: Build Tcl extension for Tcl 8 and 9 on manylinux_2014
+    name: Build Tcl extension for Tcl 8 and 9 on manylinux_2_28
     runs-on: ubuntu-latest
 
     container:
-      image: quay.io/pypa/manylinux2014_x86_64
+      image: quay.io/pypa/manylinux_2_28_x86_64
 
     steps:
       - name: Checkout
