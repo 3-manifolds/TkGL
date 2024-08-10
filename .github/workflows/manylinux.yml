@@ -23,7 +23,7 @@ jobs:
           bash ./ci/linux/build_linux_tkgl.sh
 
       - name: Save artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: TkGL_pkg_linux
           path: ./dist
