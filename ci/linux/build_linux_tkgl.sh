@@ -47,5 +47,5 @@ rm -rf build
 echo building for tcl/tk 9
 ./configure --with-tcl=tcl9/unix --with-tk=tk9/unix
 make
-mv libtcl9Tkgl$TKGL_VERSION.so dist/Tkgl$TKGL_VERSION
+mv *.so dist/Tkgl$TKGL_VERSION
 mv pkgIndex.tcl dist/Tkgl$TKGL_VERSION

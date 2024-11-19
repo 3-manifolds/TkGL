@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+TKGL_VERSION=1.2.1
 TCL8_SOURCE=tcl8.6.15-src.tar.gz
 TCL9_SOURCE=tcl9.0.0-src.tar.gz
 TK8_SOURCE=tk8.6.15-src.tar.gz
@@ -51,5 +52,5 @@ cd ..
 mv build build9
 ./configure --with-tcl=build9/tcl/Tcl.framework --with-tk=build9/tk/Tk.framework
 make CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
-mv libtcl9Tkgl$TKGL_VERSION.dylib dist/Tkgl$TKGL_VERSION
+mv *.dylib dist/Tkgl$TKGL_VERSION
 mv pkgIndex.tcl dist/Tkgl$TKGL_VERSION
