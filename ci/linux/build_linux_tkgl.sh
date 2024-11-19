@@ -42,7 +42,7 @@ cp ci/linux/linux_configure configure
 echo building for tcl/tk 8
 ./configure --with-tcl=tcl8/unix --with-tk=tk8/unix
 make
-mv libTkgl$TKGL_VERSION.so dist/Tkgl$TKGL_VERSION
+mv libTkgl*.so dist/Tkgl$TKGL_VERSION
 rm -rf build
 echo building for tcl/tk 9
 ./configure --with-tcl=tcl9/unix --with-tk=tk9/unix

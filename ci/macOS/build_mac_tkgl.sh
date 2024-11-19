@@ -42,7 +42,7 @@ cd ..
 mv build build8
 ./configure --with-tcl=build8/tcl/Tcl.framework --with-tk=build8/tk/Tk.framework
 make CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
-mv libTkgl$TKGL_VERSION.dylib dist/Tkgl$TKGL_VERSION
+mv libTkgl*.dylib dist/Tkgl$TKGL_VERSION
 
 cd tcl9
 make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
