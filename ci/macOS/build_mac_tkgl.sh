@@ -1,10 +1,9 @@
 #!/bin/bash
 set -e
-TKGL_VERSION=1.2
-TCL8_SOURCE=tcl8.6.14-src.tar.gz
-TCL9_SOURCE=tcl9.0b3-src.tar.gz
-TK8_SOURCE=tk8.6.14-src.tar.gz
-TK9_SOURCE=tk9.0b3-src.tar.gz
+TCL8_SOURCE=tcl8.6.15-src.tar.gz
+TCL9_SOURCE=tcl9.0.0-src.tar.gz
+TK8_SOURCE=tk8.6.15-src.tar.gz
+TK9_SOURCE=tk9.0.0-src.tar.gz
 TCL8_URL=https://prdownloads.sourceforge.net/tcl/$TCL8_SOURCE
 TK8_URL=https://prdownloads.sourceforge.net/tcl/$TK8_SOURCE
 TCL9_URL=https://prdownloads.sourceforge.net/tcl/$TCL9_SOURCE
