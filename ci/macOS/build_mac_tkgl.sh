@@ -32,7 +32,9 @@ tar xf $TK8_SOURCE --directory=tk8 --strip-components=1
 tar xf $TCL9_SOURCE --directory=tcl9 --strip-components=1
 tar xf $TK9_SOURCE --directory=tk9 --strip-components=1
 
-cp ci/macOS/mac_configure configure
+pwd
+ls
+autoconf
 
 cd tcl8
 make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
