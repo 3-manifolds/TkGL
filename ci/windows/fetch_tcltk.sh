@@ -1,8 +1,10 @@
 #!/usr/bin/bash
 set -e
-TCL8_VERSION=8.6.15
+# Building against 8.6.15 causes a crash on windows if run with 8.6.13.
+# For now, use 8.6.13 for Windows builds.
+TCL8_VERSION=8.6.13
 TCL9_VERSION=9.0.0
-TK8_VERSION=8.6.15
+TK8_VERSION=8.6.13
 TK9_VERSION=9.0.0
 WGET="/c/msys64/usr/bin/wget -nv"
 CMD=/c/msys64/usr/bin/cmd
