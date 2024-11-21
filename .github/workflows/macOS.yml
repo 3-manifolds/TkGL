@@ -16,6 +16,7 @@ jobs:
 
       - name: Run build script
         run: |
+          brew install autoconf
           bash ./ci/macOS/build_mac_tkgl.sh
 
       - name: Save artifacts
