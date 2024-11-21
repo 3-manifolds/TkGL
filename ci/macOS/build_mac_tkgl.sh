@@ -37,10 +37,10 @@ autoconf
 
 echo "Building Tcl 8"
 cd tcl8
-make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
+make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9" deploy
 echo "Building Tk 8"
 cd ../tk8
-make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
+make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9" deploy
 cd ..
 mv build build8
 echo "Building TkGL for Tcl/Tk 8"
@@ -49,10 +49,10 @@ make CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
 mv libTkgl*.dylib dist/Tkgl$TKGL_VERSION
 echo "Building Tcl 9"
 cd tcl9
-make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
+make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9" deploy
 echo "Building Tk 9"
 cd ../tk9/
-make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
+make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9" deploy
 cd ..
 mv build build9
 pwd

@@ -17,6 +17,13 @@ TclConfig.sh and TkConfig.sh respectively.  For example:
 
 ./configure --with-tcl=$HOME/TclTk/tcl8.6/unix -with-tk=$HOME/TclTk/tk8.6/unix
 
+Alternatively, you may simply run the bash script ci/macOS build_mac_tkgl.sh
+from the top level directory.  That script will download Tcl and Tk source
+code and build everything in this directory.  The final result will be in
+the dist directory.
+
+
+
 Windows
 =======
 
