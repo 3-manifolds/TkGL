@@ -1,0 +1,38 @@
+Linux and macOS
+===============
+Building this Tk extension requires autoconf on these platforms.
+The steps are:
+
+1. Edit configure.ac to set the TkGL version number.  The line which must
+be changed looks like:
+
+AC_INIT([Tkgl],[1.2.3])
+
+2. Run autoconf.
+
+3. Run the configure script.  You must specify the locations of the Tcl
+and Tk source directories using the options -with-tcl and -with-tk. The
+directories specified with those options must contain the scripts
+TclConfig.sh and TkConfig.sh respectively.  For example:
+
+./configure --with-tcl=$HOME/TclTk/tcl8.6/unix -with-tk=$HOME/TclTk/tk8.6/unix
+
+Windows
+=======
+
+1. Edit configure.ac as for the linux and macOS systems.  The nmake build
+system will extract the TkGL version number from that file.
+
+2. Run nmake in an appropriate MSVC build environment, such as one of the
+"command prompts" provided with VisualStudio.  For example:
+
+> cd win
+> nmake TCLDIR=C:\TclTkSrc\tcl8.6 TKDIR=C:\TclTkSrc\tk8.6 -f makefile.vc
+
+The compiled Tk extension will be found in win/Release*
+
+Hints
+=====
+
+The scripts in the ci directory and the workflow files in the directory
+.github/workflows provide additional examples of how to build TkGL.
