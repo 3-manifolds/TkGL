@@ -595,7 +595,6 @@ TkglObjEventProc(
 	if (new_width != tkglPtr->width || new_height != tkglPtr->height) {
 	    tkglPtr->width = new_width;
 	    tkglPtr->height = new_height;
-	    Tk_ResizeWindow(tkglPtr->tkwin, new_width, new_height);
 	    if (!tkglPtr->updatePending) {
 		Tcl_DoWhenIdle(TkglDisplay, tkglPtr);
 		tkglPtr->updatePending = 1;
