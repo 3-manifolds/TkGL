@@ -15,16 +15,16 @@ rm -rf tcl8 tk8 tcl9 tk9
 mkdir tcl8 tk8 tcl9 tk9
 
 if ! [ -e $TCL8_SOURCE ]; then
-    wget -nv --no-check-certificate $TCL8_URL
+    curl -L -O $TCL8_URL
 fi
 if ! [ -e $TK8_SOURCE ] || ! [ -e tk8 ] ; then
-    wget -nv --no-check-certificate $TK8_URL
+    curl -L -O $TK8_URL
 fi
 if ! [ -e $TCL9_SOURCE ] ; then
-    wget -nv --no-check-certificate $TCL9_URL
+    curl -L -O $TCL9_URL
 fi
 if ! [ -e $TK9_SOURCE ]; then
-    wget -nv --no-check-certificate $TK9_URL
+    curl -L -O $TK9_URL
 fi
 
 tar xf $TCL8_SOURCE --directory=tcl8 --strip-components=1
@@ -38,7 +38,7 @@ autoconf
 echo "Building Tcl 8"
 cd tcl8
 make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
-rcho "Building Tk 8"
+echo "Building Tk 8"
 cd ../tk8
 make -j4 -C macosx CFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
 cd ..
