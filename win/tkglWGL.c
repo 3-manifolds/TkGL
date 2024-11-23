@@ -913,8 +913,22 @@ const char* Tkgl_GetExtensions(
  */
 
 void
-Tkgl_MapWidget(void *instanceData)
+Tkgl_MapWidget(
+    void *instanceData)
 {
+    Tkgl *tkglPtr = (Tkgl *)instanceData;
+    int width = Tk_Width(tkglPtr->tkwin);
+    int height = Tk_Height(tkglPtr->tkwin);
+
+    /*
+     * The purpose of this unfortunate hack is to force the widget to be
+     * rendered immediately after it is mapped.  Without this, the widget
+     * appears blank when its window first opens, and the only way to make
+     * it draw itself seems to be to resize the containing toplevel.
+     */
+
+    Tk_ResizeWindow(tkglPtr->tkwin, width, height + 1);
+    Tk_ResizeWindow(tkglPtr->tkwin, width, height);
 }
 
 /* 
