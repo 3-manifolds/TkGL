@@ -414,6 +414,9 @@ tkgl_describePixelFormat(Tkgl *tkglPtr)
  * saved in the pixelFormat field of the widget record.
  *
  * This function is called as an idle task, or as a timer handler.
+ *
+ * It must not be called before the containing window has been mapped and laid
+ * out.  We call it from Tkgl_MapWidget.
  */
 
 static void CreateRenderingSurface(
@@ -432,18 +435,7 @@ static void CreateRenderingSurface(
      * We can't create the rendering surface until the parent window exists.
      */
 
-    if (parent == None) {
-	/* Reschedule this idle task to run again later. */
-	if (tkglPtr->timerToken) {
-	    Tcl_DeleteTimerHandler(tkglPtr->timerToken);
-	    tkglPtr->timerToken = None;
-	}
-	tkglPtr->timerToken = Tcl_CreateTimerHandler(20,
-		    CreateRenderingSurface, clientData);
-	tkglPtr->badWindow++;
-	return;
-    }
-    if (tkglPtr->badWindow > 5) {
+    if (tkglPtr->badWindow) {
 	/* Still no parent after 5 attempts.  Give up. */
         tkglPtr->surface = Tk_MakeWindow(tkwin, parent);
 	return;
@@ -474,7 +466,7 @@ static void CreateRenderingSurface(
         XVisualInfo template;
         int     count = 0;
 
-	// The -pixelformat option was set or we are being remapped.
+	/* The -pixelformat option was set or we are being remapped. */
         template.visualid = tkglPtr->pixelFormat;
         tkglPtr->visInfo = XGetVisualInfo(dpy, VisualIDMask, &template, &count);
         if (tkglPtr->visInfo == NULL) {
@@ -588,11 +580,11 @@ static void CreateRenderingSurface(
     swa.event_mask = ALL_EVENTS_MASK;
 
     /*
-     * Create the Tkgl X window with width and height equal to 1.
-     * It will be resized when the widget is mapped.
+     * Create the Tkgl X window.
      */
 
-    window = XCreateWindow(dpy, parent, 0, 0, 1, 1, //width, height,
+    window = XCreateWindow(dpy, parent,
+	    Tk_X(tkwin), Tk_Y(tkwin), Tk_Width(tkwin), Tk_Height(tkwin),
             0, tkglPtr->visInfo->depth, InputOutput, tkglPtr->visInfo->visual,
             CWBackPixmap | CWBorderPixel | CWColormap | CWEventMask, &swa);
 
@@ -711,7 +703,6 @@ Tkgl_CreateGLContext(
 	return TCL_ERROR;
     }
     tkglPtr->context = context;
-    Tcl_DoWhenIdle(CreateRenderingSurface, (void *)tkglPtr);
     return TCL_OK;
 }
 
@@ -861,7 +852,9 @@ void Tkgl_FreeResources(
 /* 
  * Tkgl_MapWidget
  *
- *    Called when MapNotify events are received.
+ *    Called when MapNotify events are received.  When this is called we know
+ *    that the window has been created and it is safe to create the GL
+ *    rendering surface.
  */
 
 void
@@ -869,21 +862,7 @@ Tkgl_MapWidget(
     void *instanceData)
 {
     Tkgl *tkglPtr = (Tkgl *)instanceData;
-    Tk_Window tkwin = tkglPtr->tkwin;
-    int x = Tk_X(tkwin);
-    int y = Tk_Y(tkwin);
-    int width = Tk_Width(tkwin);
-    int height = Tk_Height(tkwin);
-
-    /*
-     * The purpose of this unfortunate hack is to force the widget to be
-     * rendered immediately after it is mapped.  Without this, the widget
-     * appears blank when its window first opens, and the only way to make
-     * it draw itself seems to be to resize the containing toplevel.
-     */
-
-    Tk_ResizeWindow(tkwin, width, height + 1);
-    Tk_MoveResizeWindow(tkwin, x, y, width, height);
+    Tcl_DoWhenIdle(CreateRenderingSurface, (void *)tkglPtr);
 }
 
 /* 
