@@ -917,8 +917,11 @@ Tkgl_MapWidget(
     void *instanceData)
 {
     Tkgl *tkglPtr = (Tkgl *)instanceData;
-    int width = Tk_Width(tkglPtr->tkwin);
-    int height = Tk_Height(tkglPtr->tkwin);
+    Tk_Window tkwin = tkglPtr->tkwin;
+    int x = Tk_X(tkwin);
+    int y = Tk_Y(tkwin);
+    int width = Tk_Width(tkwin);
+    int height = Tk_Height(tkwin);
 
     /*
      * The purpose of this unfortunate hack is to force the widget to be
@@ -927,8 +930,8 @@ Tkgl_MapWidget(
      * it draw itself seems to be to resize the containing toplevel.
      */
 
-    Tk_ResizeWindow(tkglPtr->tkwin, width, height + 1);
-    Tk_ResizeWindow(tkglPtr->tkwin, width, height);
+    Tk_ResizeWindow(tkwin, width, height + 1);
+    Tk_MoveResizeWindow(tkwin, x, y, width, height);
 }
 
 /* 
