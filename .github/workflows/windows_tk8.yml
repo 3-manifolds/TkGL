@@ -1,10 +1,10 @@
-name: windows
+name: windows with TclTk 8
 
 on: [push]
 
 jobs:
   build_package:
-    name: Build TkGL extension for Tcl 8 and 9 on Windows
+    name: Build TkGL extension for Tcl 8 on Windows
     runs-on: windows-2022
     steps:
       - name: Checkout
