@@ -17,7 +17,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Download Tcl and Tk source code with bash
-        run: ci/windows/fetch_tcltk.sh
+        run: ci/windows/fetch_tcltk8.sh
         shell: bash
 
       - name: Build Tcl 8
@@ -34,24 +34,9 @@ jobs:
         working-directory: tk8/win
         shell: cmd
 
-      - name: Build Tcl 9
-        run: |
-          nmake -f makefile.vc
-          nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
-        working-directory: tcl9/win
-        shell: cmd
-
-      - name: Build Tk 9
-        run: |
-          nmake TCLDIR=../../tcl9 -f makefile.vc
-          nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
-        working-directory: tk9/win
-        shell: cmd
-
-      - name: Build TkGL for Tcl/Tk 8 and 9
+      - name: Build TkGL for Tcl/Tk 8
         run: |
           nmake TCLDIR=..\tcl8 TKDIR=..\tk8 -f makefile.vc
-          nmake TCLDIR=..\tcl9 TKDIR=..\tk9 -f makefile.vc
         shell: cmd
         working-directory: win
 
@@ -64,5 +49,5 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: TkGL_pkg_windows
+          name: TkGL_pkg_windows_tk8
           path: ./dist
