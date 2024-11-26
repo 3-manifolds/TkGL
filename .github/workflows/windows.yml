@@ -20,41 +20,33 @@ jobs:
         run: ci/windows/fetch_tcltk.sh
         shell: bash
 
-      - name: Build Tcl 8 with powershell
+      - name: Build Tcl 8
         run: |
-          &nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc
-          if ($lastexitcode -ne 0) {
-             throw "nmake exit code for Tcl 8: $lastexitcode"
-          }
-          &nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
+          nmake -f makefile.vc
+          nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
         working-directory: tcl8/win
+        shell: cmd
 
-      - name: Build Tk 8 with powershell
+      - name: Build Tk 8
         run: |
-          &nmake INSTALLDIR=..\..\TclTk8 TCLDIR=..\..\tcl8 -f makefile.vc
-          if ($lastexitcode -ne 0) {
-             throw "nmake exit code for Tk 8: $lastexitcode"
-          }
-          &nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
+          nmake TCLDIR=..\..\tcl8 -f makefile.vc
+          nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
         working-directory: tk8/win
+        shell: cmd
 
-      - name: Build Tcl 9 with powershell
+      - name: Build Tcl 9
         run: |
-          &nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc
-          if ($lastexitcode -ne 0) {
-             throw "nmake exit code for Tcl 9: $lastexitcode"
-          }
-          &nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
+          nmake -f makefile.vc
+          nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
         working-directory: tcl9/win
+        shell: cmd
 
-      - name: Build Tk 9 with powershell
+      - name: Build Tk 9
         run: |
-          &nmake INSTALLDIR=..\..\TclTk9 TCLDIR=../../tcl9 -f makefile.vc
-          if ($lastexitcode -ne 0) {
-             throw "nmake exit code for Tk 9: $lastexitcode"
-          }
-          ###&nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
+          nmake TCLDIR=../../tcl9 -f makefile.vc
+          nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
         working-directory: tk9/win
+        shell: cmd
 
       - name: Build TkGL for Tcl/Tk 8 and 9
         run: |
