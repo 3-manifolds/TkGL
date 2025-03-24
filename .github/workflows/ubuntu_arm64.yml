@@ -1,0 +1,26 @@
+name: ubuntu
+
+on: [push]
+
+jobs:
+  build_package:
+    name: Build Tcl extension for Tcl 8 and 9 on ubuntu
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: install Mesa
+        run: |
+          sudo apt-get update
+          sudo apt-get install libgl-dev libglx-dev
+
+      - name: Run build script
+        run: |
+          bash ./ci/linux/build_linux_tkgl.sh
+
+      - name: Save artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TkGL_pkg_linux
+          path: ./dist
