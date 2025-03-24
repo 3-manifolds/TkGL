@@ -1,4 +1,4 @@
-name: ubuntu
+name: ubuntu-arm64
 
 on: [push]
 
