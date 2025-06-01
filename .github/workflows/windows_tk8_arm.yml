@@ -12,17 +12,13 @@ jobs:
 
       - name: Setup msys
         uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: >-
-            wget
 
       - name: Init MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Download Tcl and Tk source code with bash
         run: ci/windows/fetch_tcltk8.sh
-        shell: bash
+        shell: msys2 {0}
 
       - name: Build Tcl 8
         run: |
