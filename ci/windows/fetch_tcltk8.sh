@@ -3,7 +3,7 @@ set -e
 TCL8_VERSION=8.6.15
 TK8_VERSION=8.6.15
 # Find wget; on the ARM runners it's in the second location.
-WGET="/msys64/usr/bin/wget"
+WGET="/c/msys64/usr/bin/wget"
 if [ ! -e $WGET ]; then
     WGET="/usr/bin/wget"
 fi
