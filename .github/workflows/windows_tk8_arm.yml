@@ -1,0 +1,53 @@
+name: windows with TclTk 8 (arm64)
+
+on: [push]
+
+jobs:
+  build_package:
+    name: Build TkGL extension for Tcl 8 on Windows
+    runs-on: windows-11-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup msys
+        uses: msys2/setup-msys2@v2
+
+      - name: Init MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Download Tcl and Tk source code with bash
+        run: ci/windows/fetch_tcltk8.sh
+        shell: bash
+
+      - name: Build Tcl 8
+        run: |
+          nmake -f makefile.vc
+          nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
+        working-directory: tcl8/win
+        shell: cmd
+
+      - name: Build Tk 8
+        run: |
+          nmake TCLDIR=..\..\tcl8 -f makefile.vc
+          nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
+        working-directory: tk8/win
+        shell: cmd
+
+      - name: Build TkGL for Tcl/Tk 8
+        run: |
+          nmake TCLDIR=..\tcl8 TKDIR=..\tk8 -f makefile.vc
+        shell: cmd
+        working-directory: win
+
+      - name: Assemble the package
+        run: |
+          mkdir -p dist/TkGL1.2
+          cp win/Release*/*.* dist/TkGL1.2
+        shell: bash
+
+      - name: Save artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TkGL_pkg_windows_tk8_arm64
+          path: ./dist
