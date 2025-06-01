@@ -16,7 +16,7 @@ jobs:
       - name: Init MSVC
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: amd64
+          arch: arm64
           
       - name: Download Tcl and Tk source code with bash
         run: ci/windows/fetch_tcltk8.sh
