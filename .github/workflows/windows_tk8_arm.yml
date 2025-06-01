@@ -30,7 +30,7 @@ jobs:
 
       - name: Build Tcl 8
         run: |
-          nmake -f makefile.vc
+          nmake -f makefile.vc ARCH=arm64
           nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
         working-directory: tcl8/win
         shell: cmd
