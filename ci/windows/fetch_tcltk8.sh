@@ -2,7 +2,11 @@
 set -e
 TCL8_VERSION=8.6.16
 TK8_VERSION=8.6.16
-WGET="/usr/bin/wget -nv"
+# Find wget; on the ARM runners it's in the second location.
+WGET="/msys64/usr/bin/wget -nv"
+if [! -e $WGET]; then
+    WGET="/usr/bin/wget -nv"
+fi
 if [ ! -e tcl$TCL8_VERSION-src.tar.gz ] ; then
     $WGET https://prdownloads.sourceforge.net/tcl/tcl$TCL8_VERSION-src.tar.gz
 fi
