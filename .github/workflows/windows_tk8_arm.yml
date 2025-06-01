@@ -15,14 +15,8 @@ jobs:
 
       - name: Init MSVC
         uses: ilammy/msvc-dev-cmd@v1
-
-      - name: probe system
-        shell: msys2 {0}
-        run: |
-          echo $PATH
-          which wget
-          ls /
-          ls /c/
+        with:
+          arch: amd64
           
       - name: Download Tcl and Tk source code with bash
         run: ci/windows/fetch_tcltk8.sh
@@ -30,21 +24,21 @@ jobs:
 
       - name: Build Tcl 8
         run: |
-          nmake -f makefile.vc ARCH=ARM64 TCLSH_NATIVE=ARM64
-          nmake INSTALLDIR=..\..\TclTk8 ARCH=ARM64 TCLSH_NATIVE=ARM64 -f makefile.vc install
+          nmake -f makefile.vc 
+          nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
         working-directory: tcl8/win
         shell: cmd
 
       - name: Build Tk 8
         run: |
-          nmake TCLDIR=..\..\tcl8 -f makefile.vc ARCH=ARM64 TCLSH_NATIVE=ARM64
-          nmake INSTALLDIR=..\..\TclTk8 ARCH=ARM64 TCLSH_NATIVE=ARM64 -f makefile.vc install
+          nmake TCLDIR=..\..\tcl8 -f makefile.vc
+          nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
         working-directory: tk8/win
         shell: cmd
 
       - name: Build TkGL for Tcl/Tk 8
         run: |
-          nmake TCLDIR=..\tcl8 TKDIR=..\tk8 ARCH=ARM64 TCLSH_NATIVE=ARM64 -f makefile.vc
+          nmake TCLDIR=..\tcl8 TKDIR=..\tk8 -f makefile.vc
         shell: cmd
         working-directory: win
 
