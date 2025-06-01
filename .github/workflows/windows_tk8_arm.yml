@@ -18,7 +18,7 @@ jobs:
 
       - name: Download Tcl and Tk source code with bash
         run: ci/windows/fetch_tcltk8.sh
-        shell: msys2 {0}
+        shell: bash
 
       - name: Build Tcl 8
         run: |
