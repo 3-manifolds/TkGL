@@ -37,14 +37,14 @@ jobs:
 
       - name: Build Tk 8
         run: |
-          nmake TCLDIR=..\..\tcl8 -f makefile.vc
+          nmake TCLDIR=..\..\tcl8 -f makefile.vc ARCH=arm64 TCLSH_NATIVE=arm64
           nmake INSTALLDIR=..\..\TclTk8 -f makefile.vc install
         working-directory: tk8/win
         shell: cmd
 
       - name: Build TkGL for Tcl/Tk 8
         run: |
-          nmake TCLDIR=..\tcl8 TKDIR=..\tk8 -f makefile.vc
+          nmake TCLDIR=..\tcl8 TKDIR=..\tk8 ARCH=arm64 TCLSH_NATIVE=arm64 -f makefile.vc
         shell: cmd
         working-directory: win
 
