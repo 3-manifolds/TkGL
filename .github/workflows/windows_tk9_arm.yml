@@ -1,0 +1,55 @@
+name: windows with TclTk 9 (arm64)
+
+on: [push]
+
+jobs:
+  build_package:
+    name: Build TkGL extension for Tcl 9 on Windows
+    runs-on: windows-11-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup msys
+        uses: msys2/setup-msys2@v2
+
+      - name: Init MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: arm64
+          
+      - name: Download Tcl and Tk source code with bash
+        run: ci/windows/fetch_tcltk9.sh
+        shell: msys2 {0}
+
+      - name: Build Tcl 9
+        run: |
+          nmake -f makefile.vc 
+          nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
+        working-directory: tcl9/win
+        shell: cmd
+
+      - name: Build Tk 9
+        run: |
+          nmake TCLDIR=..\..\tcl9 -f makefile.vc
+          nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
+        working-directory: tk9/win
+        shell: cmd
+
+      - name: Build TkGL for Tcl/Tk 9
+        run: |
+          nmake TCLDIR=..\tcl9 TKDIR=..\tk9 -f makefile.vc
+        shell: cmd
+        working-directory: win
+
+      - name: Assemble the package
+        run: |
+          mkdir -p dist/TkGL1.2
+          cp win/Release*/*.* dist/TkGL1.2
+        shell: bash
+
+      - name: Save artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TkGL_pkg_windows_tk9_arm64
+          path: ./dist
