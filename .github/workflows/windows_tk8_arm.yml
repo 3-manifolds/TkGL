@@ -23,11 +23,10 @@ jobs:
           which wget
           ls /
           ls /c/
-          ls /d/
           
       - name: Download Tcl and Tk source code with bash
         run: ci/windows/fetch_tcltk8.sh
-        shell: bash
+        shell: msys2 {0}
 
       - name: Build Tcl 8
         run: |
