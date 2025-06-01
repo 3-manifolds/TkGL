@@ -12,28 +12,26 @@ jobs:
 
       - name: Setup msys
         uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: >-
-            wget
 
       - name: Init MSVC
         uses: ilammy/msvc-dev-cmd@v1
-
+        with:
+          arch: arm64
+          
       - name: Download Tcl and Tk source code with bash
         run: ci/windows/fetch_tcltk9.sh
-        shell: bash
+        shell: msys2 {0}
 
       - name: Build Tcl 9
         run: |
-          nmake -f makefile.vc
+          nmake -f makefile.vc 
           nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
         working-directory: tcl9/win
         shell: cmd
 
       - name: Build Tk 9
         run: |
-          nmake TCLDIR=../../tcl9 -f makefile.vc
+          nmake TCLDIR=..\..\tcl9 -f makefile.vc
           nmake INSTALLDIR=..\..\TclTk9 -f makefile.vc install
         working-directory: tk9/win
         shell: cmd
