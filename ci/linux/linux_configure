@@ -5420,7 +5420,7 @@ else
         # On macOS, compile Tkgl source files as objective C because they need
         # access to the OpenGL framework and the NSView class.
 
-    PKG_CFLAGS="$PKG_CFLAGS -x objective-c -mmacosx-version-min=10.9"
+    PKG_CFLAGS="$PKG_CFLAGS -x objective-c -mmacosx-version-min=10.10"
 
 
 
@@ -5434,7 +5434,7 @@ else
 
 	# Really these should go in LDFLAGS but tcl.m4 is lame.
 
-    vars="-arch x86_64 -arch arm64 -mmacosx-version-min=10.9"
+    vars="-arch x86_64 -arch arm64 -mmacosx-version-min=10.10"
     for i in $vars; do
 	if test "${TEA_PLATFORM}" = "windows" -a "$GCC" = "yes" ; then
 	    # Convert foo.lib to -lfoo for GCC.  No-op if not *.lib
